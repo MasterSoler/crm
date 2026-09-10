@@ -68,6 +68,7 @@ describe("Auth (e2e)", () => {
 			google: true,
 			microsoft: microsoftConfigured,
 			emailPassword: true,
+			owebOneId: false,
 			providers: [],
 		});
 	});

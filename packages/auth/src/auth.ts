@@ -11,6 +11,8 @@ import { API_KEY_EXPIRATION, API_KEY_HEADER, API_KEY_PREFIX } from "./api-keys";
 import { AUTH_COOKIE_PREFIX } from "./cookies";
 import { env } from "./env";
 import { ensureWorkspaceMembership } from "./organization";
+import { isOwebOneIdEnabled } from "./oweb-config";
+import { owebOneIdPlugin } from "./oweb-oneid.plugin";
 import {
 	GOOGLE_PROVIDER_ID,
 	MICROSOFT_PROVIDER_ID,
@@ -79,7 +81,7 @@ export const auth = betterAuth({
 	}),
 
 	emailAndPassword: {
-		enabled: isEmailPasswordEnabled(),
+		enabled: isEmailPasswordEnabled() && !isOwebOneIdEnabled(),
 		requireEmailVerification: false,
 		minPasswordLength: 8,
 	},
@@ -247,6 +249,8 @@ export const auth = betterAuth({
 				minExpiresIn: API_KEY_EXPIRATION.minDays,
 			},
 		}),
+
+		owebOneIdPlugin(),
 	],
 
 	databaseHooks: {

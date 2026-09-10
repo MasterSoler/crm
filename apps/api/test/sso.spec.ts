@@ -2,6 +2,7 @@ import { describe, expect, it } from "bun:test";
 import {
 	isEmailPasswordEnabled,
 	isGoogleConfigured,
+	isOwebOneIdEnabled,
 	WORKSPACE_ID,
 } from "@crm/auth";
 import type { Db } from "@crm/db";
@@ -150,7 +151,13 @@ describe("the sign-in page's read", () => {
 		const { sso } = service(null, [OKTA]);
 
 		expect((await sso.signInOptions()).emailPassword).toBe(
-			isEmailPasswordEnabled(),
+			isEmailPasswordEnabled() && !isOwebOneIdEnabled(),
 		);
+	});
+
+	it("says whether OWeb OneID sign-in is enabled", async () => {
+		const { sso } = service(null, [OKTA]);
+
+		expect((await sso.signInOptions()).owebOneId).toBe(isOwebOneIdEnabled());
 	});
 });

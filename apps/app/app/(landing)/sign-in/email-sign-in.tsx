@@ -13,10 +13,17 @@ import { Spinner } from "@crm/ui/components/spinner";
 import { useRouter } from "next/navigation";
 import { useId, useState } from "react";
 import { toast } from "sonner";
+import { signInWithOwebEmail, signUpWithOwebEmail } from "@/lib/oweb-supabase";
 
 type Mode = "sign-in" | "sign-up";
 
-export function EmailSignIn({ domainHint }: { domainHint?: string }) {
+export function EmailSignIn({
+	domainHint,
+	owebOneId = false,
+}: {
+	domainHint?: string;
+	owebOneId?: boolean;
+}) {
 	const router = useRouter();
 	const emailId = useId();
 	const passwordId = useId();
@@ -32,30 +39,50 @@ export function EmailSignIn({ domainHint }: { domainHint?: string }) {
 		const email = String(form.get("email") ?? "").trim();
 		const password = String(form.get("password") ?? "");
 		const name = String(form.get("name") ?? "").trim();
-		const origin = window.location.origin;
 
-		const result =
-			mode === "sign-up"
-				? await signUp.email({
-						email,
-						password,
-						name,
-						callbackURL: `${origin}/`,
-					})
-				: await signIn.email({
-						email,
-						password,
-						callbackURL: `${origin}/`,
-					});
+		try {
+			if (owebOneId) {
+				if (mode === "sign-up") {
+					const result = await signUpWithOwebEmail({ email, password, name });
+					if (!result.confirmed) {
+						toast.message("Check your email to confirm your OWeb account.");
+						setPending(false);
+						return;
+					}
+				} else {
+					await signInWithOwebEmail({ email, password });
+				}
+			} else {
+				const origin = window.location.origin;
+				const result =
+					mode === "sign-up"
+						? await signUp.email({
+								email,
+								password,
+								name,
+								callbackURL: `${origin}/`,
+							})
+						: await signIn.email({
+								email,
+								password,
+								callbackURL: `${origin}/`,
+							});
 
-		if (result.error) {
-			toast.error(result.error.message ?? "Could not sign in.");
+				if (result.error) {
+					toast.error(result.error.message ?? "Could not sign in.");
+					setPending(false);
+					return;
+				}
+			}
+
+			router.refresh();
+			router.replace("/");
+		} catch (error) {
+			toast.error(
+				error instanceof Error ? error.message : "Could not sign in.",
+			);
 			setPending(false);
-			return;
 		}
-
-		router.refresh();
-		router.replace("/");
 	}
 
 	return (
@@ -64,12 +91,7 @@ export function EmailSignIn({ domainHint }: { domainHint?: string }) {
 				{mode === "sign-up" ? (
 					<Field>
 						<FieldLabel htmlFor={nameId}>Name</FieldLabel>
-						<Input
-							id={nameId}
-							name="name"
-							autoComplete="name"
-							required
-						/>
+						<Input id={nameId} name="name" autoComplete="name" required />
 					</Field>
 				) : null}
 
@@ -84,7 +106,7 @@ export function EmailSignIn({ domainHint }: { domainHint?: string }) {
 					/>
 					{domainHint ? (
 						<FieldDescription>
-							Use your @{domainHint} address.
+							Use your @{domainHint} OneID email.
 						</FieldDescription>
 					) : null}
 				</Field>
