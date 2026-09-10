@@ -8,7 +8,8 @@
 		"./client": "./src/client.ts",
 		"./cookies": "./src/cookies.ts",
 		"./scopes": "./src/scopes.ts",
-		"./workspace": "./src/workspace.ts"
+		"./workspace": "./src/workspace.ts",
+		"./oweb-config": "./src/oweb-config.ts"
 	},
 	"scripts": {
 		"auth:generate": "better-auth generate --config src/auth.ts --output ../db/prisma/schema.prisma --y",
@@ -24,6 +25,7 @@
 		"@crm/env": "workspace:*",
 		"@crm/validation": "workspace:*",
 		"better-auth": "^1.6.25",
+		"@supabase/supabase-js": "^2.57.4",
 		"zod": "^4.4.3"
 	},
 	"peerDependencies": {

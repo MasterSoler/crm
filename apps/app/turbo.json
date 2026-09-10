@@ -6,7 +6,12 @@
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
 			"outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"],
-			"env": ["NEXT_PUBLIC_API_URL", "NEXT_PUBLIC_AUTH_URL"],
+			"env": [
+				"NEXT_PUBLIC_API_URL",
+				"NEXT_PUBLIC_AUTH_URL",
+				"NEXT_PUBLIC_SUPABASE_URL",
+				"NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+			],
 			"passThroughEnv": [
 				"AGENT_BRIDGE_SECRET",
 				"AGENT_URL",
@@ -15,7 +20,10 @@
 				"BETTER_AUTH_SECRET",
 				"BETTER_AUTH_URL",
 				"DATABASE_URL",
-				"IS_MARKETING"
+				"IS_MARKETING",
+				"SUPABASE_URL",
+				"SUPABASE_PUBLISHABLE_KEY",
+				"OWEB_APP_URL"
 			]
 		},
 		"check-types": {
@@ -40,7 +48,10 @@
 				"DATABASE_URL",
 				"IS_MARKETING",
 				"NEXT_PUBLIC_API_URL",
-				"NEXT_PUBLIC_AUTH_URL"
+				"NEXT_PUBLIC_AUTH_URL",
+				"SUPABASE_URL",
+				"SUPABASE_PUBLISHABLE_KEY",
+				"OWEB_APP_URL"
 			]
 		}
 	}

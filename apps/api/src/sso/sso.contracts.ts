@@ -36,6 +36,7 @@ export const ssoSignInOptionsOutput = z.object({
 	google: z.boolean(),
 	microsoft: z.boolean(),
 	emailPassword: z.boolean(),
+	owebOneId: z.boolean(),
 	providers: z.array(ssoPublicProviderOutput),
 });
 

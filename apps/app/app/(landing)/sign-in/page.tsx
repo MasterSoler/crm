@@ -6,8 +6,9 @@ import { Suspense } from "react";
 import { AuthHeading, AuthShell } from "@/components/auth-shell";
 import { getSession } from "@/lib/session";
 import { getServerQueryClient, getServerTrpc } from "@/lib/trpc/server";
-import { SocialSignIn } from "./social-sign-in";
+import { ContinueWithOweb } from "./continue-with-oweb";
 import { EmailSignIn } from "./email-sign-in";
+import { SocialSignIn } from "./social-sign-in";
 import { type SsoProvider, SsoSignIn } from "./sso-sign-in";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ type SignInOptions = {
 	google: boolean;
 	microsoft: boolean;
 	emailPassword: boolean;
+	owebOneId: boolean;
 	providers: SsoProvider[];
 };
 
@@ -50,7 +52,7 @@ export default function SignInPage({ searchParams }: PageProps<"/sign-in">) {
 				fallback={
 					<AuthHeading
 						title="Welcome back"
-						description="Sign in with your account to continue."
+						description="Sign in with your OWeb OneID to continue."
 					/>
 				}
 			>
@@ -78,7 +80,9 @@ async function SignIn({
 	if (options?.microsoft ?? false) configured.push("microsoft");
 
 	const providers = options?.providers ?? [];
+	const owebOneId = options?.owebOneId ?? false;
 	const emailPassword = options?.emailPassword ?? false;
+	const showEmail = owebOneId || emailPassword;
 	const domainHint = primaryWorkspaceDomain();
 
 	const insisted = configured.find((provider) => provider === method);
@@ -90,7 +94,7 @@ async function SignIn({
 				? configured
 				: [];
 
-	if (!showSso && social.length === 0 && !emailPassword) {
+	if (!showSso && social.length === 0 && !showEmail) {
 		return (
 			<>
 				<AuthHeading
@@ -99,11 +103,9 @@ async function SignIn({
 				/>
 
 				<p className="text-center text-muted-foreground text-sm/5">
-					Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET — or MICROSOFT_CLIENT_ID
-					and MICROSOFT_CLIENT_SECRET — in the root .env file and restart. Set
-					ALLOWED_SIGN_IN to your email domain to enable email and password
-					sign-in. Your own identity provider can be added from Settings once
-					somebody is signed in.
+					For OWeb satellites, set SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY to
+					the shared One OS project. Set ALLOWED_SIGN_IN to your email domain.
+					Or set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET for Google sign-in.
 				</p>
 			</>
 		);
@@ -113,10 +115,17 @@ async function SignIn({
 		<>
 			<AuthHeading
 				title="Welcome back"
-				description="Sign in with your account to continue."
+				description={
+					owebOneId
+						? "Sign in with your OWeb OneID email and password."
+						: "Sign in with your account to continue."
+				}
 			/>
 
-			{emailPassword ? <EmailSignIn domainHint={domainHint} /> : null}
+			{owebOneId ? <ContinueWithOweb /> : null}
+			{showEmail ? (
+				<EmailSignIn domainHint={domainHint} owebOneId={owebOneId} />
+			) : null}
 			{showSso ? <SsoSignIn providers={providers} /> : null}
 			{social.map((provider) => (
 				<SocialSignIn key={provider} provider={provider} />

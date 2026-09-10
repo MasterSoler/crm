@@ -124,6 +124,22 @@ export class EnvironmentVariables {
 	AGENT_BRIDGE_SECRET?: string;
 
 	@IsOptional()
+	@IsUrl({ require_tld: false })
+	SUPABASE_URL?: string;
+
+	@IsOptional()
+	@IsString()
+	SUPABASE_PUBLISHABLE_KEY?: string;
+
+	@IsOptional()
+	@IsString()
+	SUPABASE_SERVICE_ROLE_KEY?: string;
+
+	@IsOptional()
+	@IsUrl({ require_tld: false })
+	OWEB_APP_URL?: string;
+
+	@IsOptional()
 	@IsString()
 	CRM_TELEMETRY_DISABLED?: string;
 }

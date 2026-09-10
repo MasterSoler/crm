@@ -30,6 +30,13 @@ export {
 	workspaceRoleOf,
 } from "./organization";
 export {
+	getOwebAppUrl,
+	isOwebOneIdEnabled,
+	OWEB_AUTH_STORAGE_KEY,
+	owebLoginUrl,
+	SALESFLOW_APP_ID,
+} from "./oweb-config";
+export {
 	CALENDAR_SCOPE,
 	GMAIL_SCOPE,
 	GOOGLE_PROVIDER_ID,
