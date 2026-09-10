@@ -25,6 +25,7 @@ import { SLACK_REQUESTED_SCOPES, SLACK_USER_SCOPES } from "./slack-scopes";
 import { queueSlackInventorySync } from "./slack-sync";
 import {
 	hasSignInAllowList,
+	isEmailPasswordEnabled,
 	isWorkspaceEmail,
 	primaryWorkspaceDomain,
 } from "./workspace";
@@ -78,7 +79,9 @@ export const auth = betterAuth({
 	}),
 
 	emailAndPassword: {
-		enabled: false,
+		enabled: isEmailPasswordEnabled(),
+		requireEmailVerification: false,
+		minPasswordLength: 8,
 	},
 
 	socialProviders,

@@ -1,3 +1,4 @@
+import { primaryWorkspaceDomain } from "@crm/auth";
 import type { MailboxProviderId } from "@crm/auth/scopes";
 import type { Metadata } from "next";
 import { redirect, unstable_rethrow } from "next/navigation";
@@ -6,6 +7,7 @@ import { AuthHeading, AuthShell } from "@/components/auth-shell";
 import { getSession } from "@/lib/session";
 import { getServerQueryClient, getServerTrpc } from "@/lib/trpc/server";
 import { SocialSignIn } from "./social-sign-in";
+import { EmailSignIn } from "./email-sign-in";
 import { type SsoProvider, SsoSignIn } from "./sso-sign-in";
 
 export const metadata: Metadata = {
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
 type SignInOptions = {
 	google: boolean;
 	microsoft: boolean;
+	emailPassword: boolean;
 	providers: SsoProvider[];
 };
 
@@ -75,6 +78,8 @@ async function SignIn({
 	if (options?.microsoft ?? false) configured.push("microsoft");
 
 	const providers = options?.providers ?? [];
+	const emailPassword = options?.emailPassword ?? false;
+	const domainHint = primaryWorkspaceDomain();
 
 	const insisted = configured.find((provider) => provider === method);
 	const showSso = providers.length > 0 && insisted === undefined;
@@ -85,7 +90,7 @@ async function SignIn({
 				? configured
 				: [];
 
-	if (!showSso && social.length === 0) {
+	if (!showSso && social.length === 0 && !emailPassword) {
 		return (
 			<>
 				<AuthHeading
@@ -95,9 +100,10 @@ async function SignIn({
 
 				<p className="text-center text-muted-foreground text-sm/5">
 					Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET — or MICROSOFT_CLIENT_ID
-					and MICROSOFT_CLIENT_SECRET — in the root .env file and restart. Your
-					own identity provider can be added from Settings once somebody is
-					signed in.
+					and MICROSOFT_CLIENT_SECRET — in the root .env file and restart. Set
+					ALLOWED_SIGN_IN to your email domain to enable email and password
+					sign-in. Your own identity provider can be added from Settings once
+					somebody is signed in.
 				</p>
 			</>
 		);
@@ -110,6 +116,7 @@ async function SignIn({
 				description="Sign in with your account to continue."
 			/>
 
+			{emailPassword ? <EmailSignIn domainHint={domainHint} /> : null}
 			{showSso ? <SsoSignIn providers={providers} /> : null}
 			{social.map((provider) => (
 				<SocialSignIn key={provider} provider={provider} />
