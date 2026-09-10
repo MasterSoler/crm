@@ -74,6 +74,7 @@ export {
 } from "./sso";
 export {
 	hasSignInAllowList,
+	isEmailPasswordEnabled,
 	isWorkspaceEmail,
 	primaryWorkspaceDomain,
 	workspaceDomains,

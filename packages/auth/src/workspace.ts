@@ -41,6 +41,10 @@ export function hasSignInAllowList(): boolean {
 	return domains.length > 0 || addresses.length > 0;
 }
 
+export function isEmailPasswordEnabled(): boolean {
+	return hasSignInAllowList();
+}
+
 export function isWorkspaceEmail(email: string | null | undefined): boolean {
 	const value = email?.trim().toLowerCase();
 	if (!value) return false;

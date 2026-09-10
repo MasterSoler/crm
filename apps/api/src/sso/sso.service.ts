@@ -3,6 +3,7 @@ import {
 	canConfigureSso,
 	isGoogleConfigured,
 	isMicrosoftConfigured,
+	isEmailPasswordEnabled,
 	ssoCallbackBase,
 	ssoCallbackURL,
 	ssoProviderName,
@@ -126,6 +127,7 @@ export class SsoService {
 		return {
 			google: isGoogleConfigured(),
 			microsoft: isMicrosoftConfigured(),
+			emailPassword: isEmailPasswordEnabled(),
 			providers: rows.map((row) => ({
 				providerId: row.providerId,
 				name: ssoProviderName(row.providerId),
