@@ -172,17 +172,11 @@ writeFileSync(
 		regions: ["iad1"],
 	}),
 );
-const vercelConfig = JSON.parse(
-	readFileSync(join(apiDir, "vercel.json"), "utf8"),
-);
-const crons = vercelConfig.crons ?? [];
-
 writeFileSync(
 	join(outDir, "config.json"),
 	JSON.stringify({
 		version: 3,
 		routes: [{ src: "/(.*)", dest: "/api/index" }],
-		crons,
 	}),
 );
 
